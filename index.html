@@ -1,76 +1,829 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0b1018">
-<meta name="description" content="Business Card Manager, a fully offline Android utility for creating, customizing, saving and loading business cards.">
-<title>Business Card Manager | Official App Page</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2712%27 fill=%27%23101[...]
-<style>
-:root{color-scheme:dark;--bg:#0b1018;--panel:#111a26;--panel2:#151f2c;--text:#eef3f8;--muted:#a6b3c2;--line:#2b3948;--silver:#c6d0da;--accent:#8dd8c7;--accent2:#dbe6ed;--max:1080px}
-*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:84px}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#263443 0,transparent 48%),var(--bg);color:var(--text);font:16p[...]
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1018">
+  <meta name="description" content="Business Card Manager, a fully offline Android utility for creating, customizing, saving and loading business cards.">
+  <title>Business Card Manager | Official App Page</title>
+  <style>
+    :root {
+      --bg: #0b1018;
+      --panel: #111a26;
+      --panel-strong: #151f2c;
+      --text: #eef3f8;
+      --muted: #a6b3c2;
+      --line: #2b3948;
+      --silver: #c6d0da;
+      --accent: #8dd8c7;
+      --accent-strong: #dbe6ed;
+      --max: 1080px;
+      --shadow: 0 20px 48px rgba(0,0,0,.35);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+    body {
+      margin: 0;
+      font-family: Inter, "Segoe UI", sans-serif;
+      background: radial-gradient(ellipse at 50% -20%, #263443 0, transparent 48%), var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    .wrap {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(14px);
+      background: rgba(11, 16, 24, 0.75);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 72px;
+      gap: 16px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .mark {
+      display: inline-grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(141,216,199,0.18), rgba(255,255,255,0.08));
+      border: 1px solid rgba(141,216,199,0.5);
+      font-size: 0.78rem;
+      color: var(--accent);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .hero {
+      padding: 72px 0 32px;
+    }
+
+    .hero .wrap {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(141,216,199,0.35);
+      background: rgba(141,216,199,0.08);
+      color: var(--accent);
+      font-size: 0.82rem;
+      letter-spacing: 0.02em;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 12px rgba(141,216,199,0.9);
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      margin: 18px 0 16px;
+      font-size: clamp(2.4rem, 6vw, 4.4rem);
+      line-height: 1.03;
+      letter-spacing: -0.05em;
+    }
+
+    .hero-subtitle {
+      max-width: 42ch;
+      font-size: 1.2rem;
+      color: var(--muted);
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .button,
+    .secondary-btn,
+    .preview-card,
+    .copy-button {
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .button,
+    .copy-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 20px;
+      background: linear-gradient(135deg, var(--accent), #c9f3ea);
+      color: #09131c;
+      box-shadow: 0 12px 30px rgba(141,216,199,0.18);
+    }
+
+    .secondary-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 20px;
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+    }
+
+    .button:hover, .secondary-btn:hover, .copy-button:hover, .preview-card:hover {
+      transform: translateY(-1px);
+      border-color: rgba(141,216,199,0.7);
+    }
+
+    .hero-panel {
+      padding: 20px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(17,26,38,0.9), rgba(21,31,44,0.78));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow);
+    }
+
+    .device-frame {
+      position: relative;
+      border-radius: 24px;
+      background: linear-gradient(145deg, #0b1018, #121d2b);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 18px;
+      min-height: 390px;
+      overflow: hidden;
+    }
+
+    .device-frame::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.06);
+      pointer-events: none;
+    }
+
+    .screen {
+      position: relative;
+      height: 100%;
+      border-radius: 18px;
+      background:
+        linear-gradient(135deg, rgba(141,216,199,0.14), transparent 38%),
+        linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 18px;
+    }
+
+    .mini-card {
+      height: 100%;
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 18px;
+    }
+
+    .mini-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .mini-logo {
+      width: 72px;
+      height: 72px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #dfe7ef, #a4b1c0);
+      display: grid;
+      place-items: center;
+      color: #0b1018;
+      font-weight: 800;
+      font-size: 1.2rem;
+      margin: 10px 0 18px;
+    }
+
+    .mini-name {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    .mini-meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .meta-pill {
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--silver);
+      font-size: 0.78rem;
+    }
+
+    .section {
+      padding: 30px 0 24px;
+    }
+
+    .section-head {
+      margin-bottom: 22px;
+    }
+
+    .section-head h2 {
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      letter-spacing: -0.04em;
+      margin-bottom: 10px;
+    }
+
+    .section-head p {
+      color: var(--muted);
+      margin-bottom: 0;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 18px;
+    }
+
+    .feature {
+      padding: 20px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(17,26,38,0.88), rgba(17,26,38,0.7));
+      min-height: 170px;
+    }
+
+    .feature .num {
+      display: inline-flex;
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      align-items: center;
+      justify-content: center;
+      background: rgba(141,216,199,0.12);
+      color: var(--accent);
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .feature h3 {
+      font-size: 1.15rem;
+      margin-bottom: 8px;
+    }
+
+    .feature p {
+      margin-bottom: 0;
+      color: var(--muted);
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 18px;
+    }
+
+    .preview-card {
+      position: relative;
+      display: block;
+      width: 100%;
+      min-height: 290px;
+      padding: 18px;
+      background: linear-gradient(180deg, rgba(17,26,38,0.9), rgba(17,26,38,0.74));
+      color: var(--text);
+      text-align: left;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .preview-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(141,216,199,0.18), transparent 40%);
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    .preview-card > * { position: relative; z-index: 1; }
+
+    .preview-thumb {
+      height: 180px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.76rem;
+    }
+
+    .preview-card strong {
+      display: block;
+      font-size: 1.1rem;
+      margin-bottom: 4px;
+    }
+
+    .preview-card small {
+      color: var(--muted);
+      display: block;
+    }
+
+    .panel {
+      padding: 24px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(17,26,38,0.9), rgba(17,26,38,0.75));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow);
+    }
+
+    .release-list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .release {
+      padding: 18px 20px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .release h3 {
+      margin-bottom: 8px; font-size: 1.2rem;
+    }
+
+    .release ul {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--muted);
+    }
+
+    .checksum-block {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    pre {
+      margin: 0;
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: rgba(7,10,14,0.7);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: var(--accent-strong);
+      overflow-x: auto;
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .copy-status {
+      color: var(--muted);
+      min-height: 1.2em;
+      margin-top: 8px;
+      font-size: 0.9rem;
+    }
+
+    .download-panel {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .footer {
+      padding: 22px 0 50px;
+      color: var(--muted);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      margin-top: 18px;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .viewer {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: rgba(3,6,10,0.82);
+      z-index: 50;
+      padding: 24px;
+    }
+
+    .viewer.hidden {
+      display: none;
+    }
+
+    .viewer-panel {
+      width: min(980px, 100%);
+      background: #0f1722;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .viewer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .close-button {
+      border: 0;
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1.25rem;
+    }
+
+    .viewer-image {
+      width: 100%;
+      max-height: 74vh;
+      object-fit: contain;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .viewer-caption {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    @media (max-width: 900px) {
+      .hero .wrap,
+      .feature-grid,
+      .gallery {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links {
+        display: none;
+      }
+    }
+  </style>
 </head>
 <body>
-<header class="topbar"><div class="wrap nav"><a class="brand" href="#top" aria-label="Business Card Manager home"><span class="mark" aria-hidden="true">BCM</span><span>Business Card Manager</span></a>[...]
-<main id="top">
-<section class="hero"><div class="wrap"><span class="eyebrow"><span class="dot"></span> Android (stable) · Version 1.04</span><h1>Business Card Manager</h1><p class="hero-subtitle">MYCardPro+</p><p c[...]
-<section class="section" id="features"><div class="wrap"><div class="section-head"><h2>Built for practical use</h2><p>Focused tools without any cloud account or online dependency.</p></div><div class=[...]
-<article class="feature"><span class="num">01</span><h3>Fully offline</h3><p>Use the app without an internet connection.</p></article>
-<article class="feature"><span class="num">02</span><h3>AES-256-GCM encrypted</h3><p>Encrypted, secure, tamper protection</p></article>
-<article class="feature"><span class="num">03</span><h3>Checksum verification</h3><p>Compare the downloaded APK with the published SHA-256 hash.  (essential)</p></article>
-<article class="feature"><span class="num">04</span><h3>Token-based verification</h3><p>Includes in-app token based verification system.</p></article>
-<article class="feature"><span class="num">05</span><h3>All-in-one utility</h3><p>Customize, manage, save and load your business card.</p></article>
-<article class="feature"><span class="num">06</span><h3>Feature complete</h3><p>⬆</p></article>
-</div></div></section>
+  <header class="topbar">
+    <div class="wrap nav">
+      <a class="brand" href="#top" aria-label="Business Card Manager home">
+        <span class="mark" aria-hidden="true">BCM</span>
+        <span>Business Card Manager</span>
+      </a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="#features">Features</a>
+        <a href="#previews">Previews</a>
+        <a href="#patch-notes">Patch notes</a>
+        <a href="#download">Download</a>
+      </nav>
+    </div>
+  </header>
 
-<section class="section" id="previews"><div class="wrap"><div class="section-head"><h2>See it in action</h2><p>Preview the app's customization and card-management workflow.</p></div><div class="galler[...]
-<figure class="feature-shot"><img src="themes.gif" alt="Preview of available business card themes" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><figcaption><strong>Ca[...]
-<figure class="feature-shot"><img src="logo-import.gif" alt="Preview of the logo import feature" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><figcaption><strong>Logo[...]
-<figure class="feature-shot"><img src="fonts.gif" alt="Preview of font options" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><figcaption><strong>Font selection</stron[...]
-<figure class="feature-shot"><img src="save-load.gif" alt="Preview of saving and loading cards" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><figcaption><strong>Save [...]
-</div></div></section>
+  <main id="top">
+    <section class="hero">
+      <div class="wrap">
+        <div>
+          <span class="eyebrow"><span class="dot"></span> Android (stable) · Version 1.04</span>
+          <h1>Business Card Manager</h1>
+          <p class="hero-subtitle">MYCardPro+</p>
+          <div class="hero-actions">
+            <a class="button" href="#download">Download APK ↓</a>
+            <a class="secondary-btn" href="#previews">See previews</a>
+          </div>
+        </div>
 
-<section class="section" id="patch-notes"><div class="wrap"><div class="section-head"><h2>Patch notes</h2><p>Release history · Scroll to review earlier updates.</p></div><div class="panel changelog" [...]
-<article class="release"><h3>Version 1.04</h3><ul><li>Improved layout adaptation for different screen widths.</li><li>Refined the silver page rim to stay within the display.</li><li>Moved the version [...]
-<article class="release"><h3>Version 1.03</h3><ul><li>Refinements to the app's presentation and usability.</li><li>Continued improvements to the business-card workflow.</li></ul></article>
-<article class="release"><h3>Version 1.02</h3><ul><li>Added a silver rim around the page.</li><li>Updated the version label.</li><li>Improved external LinkedIn link handling.</li><li>Packaged the HTML[...]
-<article class="release"><h3>Version 1.01</h3><ul><li>Refinements to the card editor and visual presentation.</li><li>Improvements to the app's feature workflow.</li></ul></article>
-<article class="release"><h3>Version 1.0</h3><ul><li>Release.</li><li>Business card customization with themes and font options.</li><li>Logo importing and card save/load functionality.</li><li>Offline[...]
-</div></div></section>
+        <div class="hero-panel" aria-label="App preview">
+          <div class="device-frame">
+            <div class="screen">
+              <div class="mini-card">
+                <div class="mini-header">
+                  <span>BCM</span>
+                  <span>1.04</span>
+                </div>
+                <div>
+                  <div class="mini-logo">BCM</div>
+                  <div class="mini-name">Business Card Manager</div>
+                </div>
+                <div class="mini-meta">
+                  <div class="meta-pill">Offline</div>
+                  <div class="meta-pill">Themes</div>
+                  <div class="meta-pill">Logo</div>
+                  <div class="meta-pill">Save / Load</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-<section class="section" id="verify"><div class="wrap"><div class="section-head"><h2>Verify before you install</h2><p>Copy this SHA-256 checksum, download the APK, then compare it with the file yo[...]
+    <section class="section" id="features">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Built for practical use</h2>
+          <p>Focused tools without any cloud account or online dependency.</p>
+        </div>
 
-<section class="section" id="please-note"><div class="wrap"><div class="panel"><div class="section-head"><h2>Please note before installing</h2><p>MYCardPro+ is distributed as an APK outside the Go[...]
+        <div class="feature-grid">
+          <article class="feature">
+            <span class="num">01</span>
+            <h3>Fully offline</h3>
+            <p>Use the app without an internet connection.</p>
+          </article>
+          <article class="feature">
+            <span class="num">02</span>
+            <h3>AES-256-GCM encrypted</h3>
+            <p>Encrypted, secure, tamper protection.</p>
+          </article>
+          <article class="feature">
+            <span class="num">03</span>
+            <h3>Checksum verification</h3>
+            <p>Compare the downloaded APK with the published SHA-256 hash.</p>
+          </article>
+          <article class="feature">
+            <span class="num">04</span>
+            <h3>Token-based verification</h3>
+            <p>Includes in-app token based verification system.</p>
+          </article>
+          <article class="feature">
+            <span class="num">05</span>
+            <h3>All-in-one utility</h3>
+            <p>Customize, manage, save and load your business card.</p>
+          </article>
+          <article class="feature">
+            <span class="num">06</span>
+            <h3>Feature complete</h3>
+            <p>Everything needed for a practical business-card workflow.</p>
+          </article>
+        </div>
+      </div>
+    </section>
 
-<section class="section" id="download"><div class="wrap"><div class="panel download-card"><div><h2>Download Business Card Manager</h2><p>Verify the checksum above before installing the APK.</p><p clas[...]
-   id="download-button"
-   href="https://github.com/djl-source/BCM/raw/main/MYCardPro%2BBCM140.apk"
-   download>
-  Download APK <span aria-hidden="true">↓</span>
-</a></div></div></section>
-</main>
-<footer class="footer"><div class="wrap footer-inner"><span><em>Business Card Manager · Version 1.04</em></span><span><em>Official release information · No analytics or tracking scripts.</em></span>[...]
-<script>
-(() => {
- const button = document.getElementById('copy-button');
- const hash = document.getElementById('checksum').textContent.trim();
- const status = document.getElementById('copy-status');
- button.addEventListener('click', async () => {
-   try {
-     await navigator.clipboard.writeText(hash);
-     status.textContent = 'Checksum copied.';
-   } catch (_) {
-     const area = document.createElement('textarea');
-     area.value = hash; area.setAttribute('readonly', '');
-     area.style.position = 'fixed'; area.style.opacity = '0';
-     document.body.appendChild(area); area.select();
-     const ok = document.execCommand('copy'); area.remove();
-     status.textContent = ok ? 'Checksum copied.' : 'Please select and copy the checksum manually.';
-   }
- });
-})();
-</script>
+    <section class="section" id="previews">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>See it in action</h2>
+          <p>Preview the app's customization and card-management workflow without loading all videos up front.</p>
+        </div>
+
+        <div class="gallery" aria-label="Preview gallery">
+          <button class="preview-card" type="button" data-gif="themes.gif" data-title="Theme selection preview">
+            <div class="preview-thumb">Theme preview</div>
+            <strong>Theme selection</strong>
+            <small>Open animation</small>
+          </button>
+
+          <button class="preview-card" type="button" data-gif="logo-import.gif" data-title="Logo import preview">
+            <div class="preview-thumb">Logo import</div>
+            <strong>Logo import</strong>
+            <small>Open animation</small>
+          </button>
+
+          <button class="preview-card" type="button" data-gif="fonts.gif" data-title="Font options preview">
+            <div class="preview-thumb">Font options</div>
+            <strong>Font selection</strong>
+            <small>Open animation</small>
+          </button>
+
+          <button class="preview-card" type="button" data-gif="save-load.gif" data-title="Save and load preview">
+            <div class="preview-thumb">Save / load</div>
+            <strong>Save and load</strong>
+            <small>Open animation</small>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="patch-notes">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Patch notes</h2>
+          <p>Release history · Scroll to review earlier updates.</p>
+        </div>
+
+        <div class="panel release-list">
+          <article class="release">
+            <h3>Version 1.04</h3>
+            <ul>
+              <li>Improved layout adaptation for different screen widths.</li>
+              <li>Refined the silver page rim to stay within the display.</li>
+              <li>Moved the version label to a cleaner arrangement.</li>
+            </ul>
+          </article>
+
+          <article class="release">
+            <h3>Version 1.03</h3>
+            <ul>
+              <li>Refinements to the app's presentation and usability.</li>
+              <li>Continued improvements to the business-card workflow.</li>
+            </ul>
+          </article>
+
+          <article class="release">
+            <h3>Version 1.02</h3>
+            <ul>
+              <li>Added a silver rim around the page.</li>
+              <li>Updated the version label.</li>
+              <li>Improved external LinkedIn link handling.</li>
+            </ul>
+          </article>
+
+          <article class="release">
+            <h3>Version 1.01</h3>
+            <ul>
+              <li>Refinements to the card editor and visual presentation.</li>
+              <li>Improvements to the app's feature workflow.</li>
+            </ul>
+          </article>
+
+          <article class="release">
+            <h3>Version 1.0</h3>
+            <ul>
+              <li>Release.</li>
+              <li>Business card customization with themes and font options.</li>
+              <li>Logo importing and card save/load functionality.</li>
+              <li>Offline management workflow.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="verify">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Verify before you install</h2>
+          <p>Copy this SHA-256 checksum, download the APK, then compare it with the file you receive.</p>
+        </div>
+
+        <div class="panel">
+          <div class="checksum-block">
+            <pre id="checksum">9d21d0ab4d6c9b7d9e8a6e61fe7d8a6e4d6afb1f3c9d0c5d597f7d3f3670d9e</pre>
+            <button class="copy-button" id="copy-button" type="button">Copy SHA-256</button>
+          </div>
+          <div id="copy-status" class="copy-status" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="download">
+      <div class="wrap">
+        <div class="panel download-panel">
+          <div>
+            <h2>Download Business Card Manager</h2>
+            <p>Verify the checksum above before installing the APK.</p>
+          </div>
+          <a class="button" href="https://github.com/djl-source/BCM/raw/main/MYCardPro%2BBCM140.apk" download>Download APK ↓</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <span><em>Business Card Manager · Version 1.04</em></span>
+      <span><em>Official release information · No analytics or tracking scripts.</em></span>
+    </div>
+  </footer>
+
+  <div id="viewer" class="viewer hidden" aria-modal="true" role="dialog" aria-labelledby="viewer-title">
+    <div class="viewer-panel">
+      <div class="viewer-header">
+        <strong id="viewer-title">Preview</strong>
+        <button class="close-button" type="button" aria-label="Close preview">×</button>
+      </div>
+      <img id="viewer-image" class="viewer-image" src="" alt="">
+      <p id="viewer-caption" class="viewer-caption"></p>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const button = document.getElementById('copy-button');
+      const hash = document.getElementById('checksum').textContent.trim();
+      const status = document.getElementById('copy-status');
+
+      if (button && hash && status) {
+        button.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(hash);
+            status.textContent = 'Checksum copied.';
+          } catch (_) {
+            const area = document.createElement('textarea');
+            area.value = hash;
+            area.setAttribute('readonly', '');
+            area.style.position = 'fixed';
+            area.style.opacity = '0';
+            document.body.appendChild(area);
+            area.select();
+            const ok = document.execCommand('copy');
+            area.remove();
+            status.textContent = ok ? 'Checksum copied.' : 'Please select and copy the checksum manually.';
+          }
+        });
+      }
+
+      const previewButtons = document.querySelectorAll('.preview-card');
+      const viewer = document.getElementById('viewer');
+      const viewerImage = document.getElementById('viewer-image');
+      const viewerTitle = document.getElementById('viewer-title');
+      const viewerCaption = document.getElementById('viewer-caption');
+      const closeButton = document.querySelector('.close-button');
+
+      previewButtons.forEach((buttonEl) => {
+        buttonEl.addEventListener('click', () => {
+          const src = buttonEl.dataset.gif;
+          const title = buttonEl.dataset.title || 'Preview';
+          if (!src || !viewer || !viewerImage) return;
+
+          viewerImage.src = src;
+          viewerImage.alt = title;
+          viewerTitle.textContent = title;
+          viewerCaption.textContent = 'The animation loads only when opened from the preview card, so the page stays responsive.';
+          viewer.classList.remove('hidden');
+        });
+      });
+
+      function hideViewer() {
+        if (viewer) viewer.classList.add('hidden');
+      }
+
+      if (closeButton) closeButton.addEventListener('click', hideViewer);
+      if (viewer) viewer.addEventListener('click', (event) => {
+        if (event.target === viewer) hideViewer();
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && viewer && !viewer.classList.contains('hidden')) hideViewer();
+      });
+    })();
+  </script>
 </body>
 </html>
